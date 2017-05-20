@@ -38,14 +38,18 @@ public class BrowserTest implements Executable {
 
         Subscription subscription = new Gson().fromJson(test.get("subscription").getAsJsonObject(), Subscription.class);
 
-        Notification notification = new Notification(subscription, "Hello, world");
+        Notification notification = new Notification(subscription, getPayload());
 
         HttpResponse response = pushService.send(notification);
         assertEquals(201, response.getStatusLine().getStatusCode());
 
         JsonArray messages = testingService.getNotificationStatus(testSuiteId, testId);
         assertEquals(1, messages.size());
-        assertEquals(new JsonPrimitive("Hello, world"), messages.get(0));
+        assertEquals(new JsonPrimitive(getPayload()), messages.get(0));
+    }
+
+    protected String getPayload() {
+        return "{\"tag\":\"declined\",\"reason\":\"Endereço não encontrado.\"}";
     }
 
     /**
